@@ -1,0 +1,87 @@
+Theodore Nguyen
+704-156-701
+
+CS35L fall 2014 Lab 5.txt - Debugging a C program
+
+- I created a directory for this week's lab and homework and then downloaded
+  both the bugged coreutils and the patch for the old coreutils and unpacked
+ the coreutils
+
+mkdir assign5
+cd assign5
+wget http://cs.ucla.edu/classes/fall14/cs35L/assign/coreutils-with-bug.tar.gz
+wget http://cs.ucla.edu/classes/fall14/cs35L/assign/coreutils.diff
+tar xvf coreutils-with-bug-tar.gz
+cd coreutils-with-bug
+
+- I ran the commands 
+
+./configure CFLAGS="-g"
+make
+
+ to encounter the expected error. I then patched and remade via
+
+patch -p0 < ../coreutils.diff
+make
+ 
+ which successfully patched. The broken version of the ls command is found
+ inside the src. 
+
+- I ran the following commands
+
+
+tmp=$(mktemp -d)
+cd $tmp
+touch -d '1918-11-11 11:00 GMT' wwi-armistice
+touch now
+sleep 1
+touch now1
+TZ=UTC0 /u/eng/class/classeen/assign5/coreutils-with-bug/src/ls -lt --full-time wwi-armistice now now1
+
+ which outputted
+
+-rw-r--r-- 1 classeen class 0 1918-11-11 11:00:00.000000000 +0000wwi-armistice
+-rw-r--r-- 1 classeen class 0 2014-11-03 19:39:49.526287710 +0000 now1
+-rw-r--r-- 1 classeen class 0 2014-11-03 19:39:48.523252040 +0000 now
+
+ then ran
+
+cd
+rm -fr $tmp
+
+ Which confirmed the brokenness of the coreutils ls in as defined in the
+ specification, that the old file created appeared at the top instead of at
+ the bottom.
+
+ I ran the gdb debugger on the coreutils ls.c file, and set a breakpoint at
+ the function sort_files (from looking at hints in class). I ran the program,
+ looking at qsort and eventually looking at timespec_cmp.
+
+ In class, we talked about how the numbers "loop around" in the case of
+ integer overflow, and it was hinted that this worked in the same manner. I
+ went into the timespec.h file under the coreutils library to look at the
+ timespec_cmp function.
+
+ Inside the timespec_cmp function, the line
+
+int diff = a.tv_sec - b.tv_sec;
+
+ causes an integer overflow when b.tv_sec is massively larger than a.tv_sec,
+ and vice versa. This can be fixed by adding several if statements to obtain
+ proper return values
+
+ Created a changelog file using emacs, which essentially is my diff file that
+ implements the if statements 
+
+ Ran the patch on the directory, and ran make; then tested the newly patched
+ ./ls, which outputted
+
+-rw-r--r-- 1 classeen class 0 2014-11-08 06:34:03.863045901 +0000 now1
+-rw-r--r-- 1 classeen class 0 2014-11-08 06:34:02.860011152 +0000 now
+-rw-r--r-- 1 classeen class 0 1918-11-11 11:00:00.000000000 +0000 wwi-armistice 
+ 
+ successfully.
+
+ Seasnet does not do well with this issue (as in, it still shows the
+ wwi-armistice file on top because it runs in 64-bit, so switching to 32-bit
+ loses the bit sign since 1918 is before the epoch time.

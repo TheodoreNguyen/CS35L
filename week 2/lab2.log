@@ -1,0 +1,183 @@
+ssignment 2: shell scripting
+
+Laboratory: spell-checking hawaiian
+
+lab2.log -> what I am doing
+
+
+- I changed the shell locale to be in the standard c locale via the command
+
+	export LC_ALL='C'
+
+- I copied the file from /usr/share/dict/words to my working directory,
+	/u/eng/class/classeen
+
+- I renamed the file to words2 and used the command
+	sort -d words2 > words
+and then deleted the words2 file 
+
+- ran the command
+
+wget http://www.cs.ucla.edu/classes/fall14/cs35L/assign/assign2.html
+
+to download the assignment to the server
+
+- I made a new directory for this assignment, moving the files "assign2.html" 
+and "words" to /u/eng/class/classeen/assign2/
+
+- I ran the listed commands 
+
+tr -c 'A-Za-z' '[\n*]' 
+tr -cs 'A-Za-z' '[\n*]' 
+tr -cs 'A-Za-z' '[\n*]' | sort 
+tr -cs 'A-Za-z' '[\n*]' | sort -u 
+tr -cs 'A-Za-z' '[\n*]' | sort -u | comm - words 
+tr -cs 'A-Za-z' '[\n*]' | sort -u | comm -23 - words 
+
+a couple times to observe each command. My descriptions for each cmd are as 
+follows:
+
+
+
+tr -c 'A-Za-z' '[\n*]' 
+--> Goes through the entire file and, for every character encountered
+that is not an alphabetic character - lowercase or capital - is replaced with 
+an endline/newline character
+
+
+tr -cs 'A-Za-z' '[\n*]' 
+--> Does exactly the same thing as the first command above, but the addition
+of the -s denotes "squeeze-repeats", which will cause it to not display the same
+character on two successive lines. Therefore, each line is placed
+on a successive line to another - there are not several newline characters 
+for the amount of non-alphabetic characters replaced. Essentially, it gives the 
+output of the former, but "squeezed" together.
+
+
+tr -cs 'A-Za-z' '[\n*]' | sort 
+---> sorts in alphabetical order from A to Z
+
+
+tr -cs 'A-Za-z' '[\n*]' | sort -u
+--> in addition to above, replaces repeats of the same word, removing duplicates
+and essentially making each entry unique
+
+
+tr -cs 'A-Za-z' '[\n*]' | sort -u | comm - words
+--> outputs words in both the sorted list and in the words dictionary file
+
+
+tr -cs 'A-Za-z' '[\n*]' | sort -u | comm -23 words
+--> Removes words that are in the document, but not in the dictionary, as well 
+as words that are in both files; it thus leaves words that are incorrectly
+spelled
+
+
+
+The last command is a spell checker for hawaiian words
+
+- downloaded a copy of the hawaiian words via
+
+	wget http://mauimapp.com/moolelo/hwnwdseng.htm#1/
+
+
+
+- need to find "<tr> <td>Eword</td> <td>Hword</td>" in the file for each Hword
+- need to filter out everything else besides the hawaiian words
+- need to store the hawaiian words into another file, hwords
+- need to delete tags with hawaiian words, empty lines
+- need to replace commas with endlines and ` with '
+- need to sort at the end
+
+
+#!/bin/bash
+		
+--->header
+
+
+sed 's/\r//g' |
+
+---> removes \r characters from the document		
+
+						
+tr -d '[:blank:]' |
+
+---> removes spaces
+
+
+sed 's/<u>//g' |
+sed 's/<\/u>//g' |
+---> removes the html formatting, specifically <u> and <\/u>
+
+
+
+
+
+sed '/<tr>/,/<\/td>/d' |
+
+---> Deletes english words
+
+
+sed 's/<tr>//g' |
+
+sed 's/<\/tr>//g' | 
+
+---> deletes formatting around the hawaiian words leftover
+
+
+grep '^<td>.*<\/td>$' |
+
+---> show only the hawaiian words (and their tags)
+
+
+sed 's/<td>//g' |
+sed 's/<\/td>//g' |
+
+---> deletes the tags
+
+
+
+sed '/^$/d' |
+
+---> deletes empty lines
+
+
+sed s/\`/\'/g |
+
+---> replace ` with '
+
+
+sed 's/,/\n/g' |
+
+---> replace comma with an endline
+
+
+sort |
+
+--> sorts the list
+
+
+uniq -u
+
+---> removes duplicates
+
+
+
+
+#!/bin/bash
+sed 's/\r//g' |
+tr -d '[:blank:]' |
+sed 's/<u>//g' |
+sed 's/<\/u>//g' |
+sed '/<tr>/,/<\/td>/d' |
+sed 's/<tr>//g' |
+sed 's/<\/tr>//g' |
+grep '^<td>.*<\/td>$' |
+sed 's/<td>//g' |
+sed 's/<\/td>//g' |
+sed '/^$/d' |
+sed s/\`/\'/g |
+sed 's/,/\n/g' |
+sort |
+uniq -u
+

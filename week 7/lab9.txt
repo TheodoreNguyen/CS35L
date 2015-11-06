@@ -1,0 +1,84 @@
+Theodore Nguyen
+704-156-701
+
+CS35L Week 7 laboratory (actually week 9 on the course webpage, but yeah):
+Buffered versus unbuffered I/O
+
+
+- I created a new directory for the assignment for this week
+
+- I created the files "catb.c" and "catu.c", and then inputted what the TA
+  told us to put in for the two C source codes
+
+- I compiled the two files :
+
+	gcc catb.c -o catb
+	gcc catu.c -o catu
+
+- catb reads in a character, outputs it to the screen via putchar
+- catu reads in and writes out byte by byte without knowing size of buffer
+
+- I created a file with some random gibberish in there, then multiplied the
+  contents to create a file, "file.txt", that was over five million bytes
+
+- I ran the command
+
+strace -o catb_strace ./catb < file.txt 
+
+ which printed all of the words in file.txt and made a file with all of the
+ system calls in it
+
+- I ran the command
+
+strace -o catu_strace ./catu < file.txt
+ 
+ which did the complete exact same thing as the previous command, except that it took considerably longer. It took alot longer because it reads byte by byte without the buffer; it has to switch back and forth between read and write for each byte; it has to switch back and forth between read and write for each byte
+
+- I ran the command
+
+time ./catb < file.txt
+
+ which outputted
+
+real	0m6.495s
+user	0m0.202s
+sys	0m0.226s
+
+ The latter calls read once and stores it, therefore does not have a lot of
+ system calls and the system time is short
+
+time ./catu < file.txt
+
+ which outputted
+
+real	0m8.350s
+user	0m0.290s
+sys	0m7.590s
+
+ The latter has a call longer than the catb, due to the fact that it has to
+ switch system calls back and forth for each byte instead of going to the
+ buffer and writing afterwords
+
+
+
+
+time ./catb < file.txt > outputb
+
+ which outputted, and stored
+
+real	0m0.221s
+user	0m0.147s
+sys	0m0.009s
+
+
+
+time ./catu < file.txt > outputu
+
+ which outputted, and stored
+
+real	0m5.097s
+user	0m0.269s
+sys	0m4.762s
+
+
+

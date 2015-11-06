@@ -1,0 +1,59 @@
+Theodore Nguyen
+704-156-701
+
+CS35L Fall 2014 week 7 homework (week 9 assignment though)
+
+srot13 STDINPUT
+
+time printf '\0Gur\n\0Dhvpx\n\0Oebja\n\0sbk\n\twhzcf\n\tbire\n\tgur\n\tynml\n\tqbt.' | ./srot13 | od -c
+
+real    0m0.002s
+user    0m0.002s
+sys     0m0.001s
+
+
+
+
+srot13u STDINPUT
+
+time printf '\0Gur\n\0Dhvpx\n\0Oebja\n\0sbk\n\twhzcf\n\tbire\n\tgur\n\tynml\n\tqbt.' | ./srot13u | od -c
+
+Number of Comparisons: 13
+
+real    0m0.012s
+user    0m0.000s
+sys     0m0.003s
+
+
+
+srot13 STDINPUT w/ large file
+
+time cat file.txt | ./srot13 | od -c
+
+real    0m30.294s
+user    0m5.713s
+sys     0m0.534s
+
+
+
+srot13u STDINPUT w/ large file
+
+time cat file.txt | ./srot13u | od -c
+
+Number of Comparisons: 2063681
+
+real	0m42.324s
+user	0m5.215s
+sys	0m4.254s
+
+
+The unbuffered takes longer since reading and writing 1 byte at a time takes
+longer
+
+printf = 1 line
+file.txt = 121393 lines
+
+
+Estimate around
+
+# lines in file = (7/10) comparisons

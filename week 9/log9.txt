@@ -1,0 +1,44 @@
+Theodore Nguyen
+704-156-701
+
+CS35L Fall 2014 Laboratory 9: Multithreaded performance
+
+- I ran the command sort --version to see the installed version of sort; it
+  was 8.4, so I have to use the stored latest version that supports
+ multithreading
+
+- I created a directory for this week's laboratory
+
+- I ran the command
+
+od -An -f -N 4000000 < /dev/urandom | tr -s ' ' '\n' > file.txt
+
+ to create the file containing 10,000,00 random double-precision floating
+point numbers, and then deleted the first line since it was a blank line.
+
+- Afterwards, I ran the command
+
+time -p /usr/local/cs/bin/sort -g --parallel=# file.txt > /dev/null
+
+ to use time to record the time, and where --parallel=# the # corresponding to
+the number of threads. I ran it for 1, 2, 4, and 8 threads, as shown below. 
+
+
+
+[classeen@lnxsrv04 ~/assign9/lab]$ time -p /usr/local/cs/bin/sort -g --parallel=1 file.txt > /dev/null
+real 7.78
+user 7.76
+sys 0.01
+[classeen@lnxsrv04 ~/assign9/lab]$ time -p /usr/local/cs/bin/sort -g --parallel=2 file.txt > /dev/null
+real 4.18
+user 7.93
+sys 0.02
+[classeen@lnxsrv04 ~/assign9/lab]$ time -p /usr/local/cs/bin/sort -g --parallel=4 file.txt > /dev/null
+real 2.45
+user 8.04
+sys 0.03
+[classeen@lnxsrv04 ~/assign9/lab]$ time -p /usr/local/cs/bin/sort -g --parallel=8 file.txt > /dev/null
+real 1.73
+user 8.80
+sys 0.05
+

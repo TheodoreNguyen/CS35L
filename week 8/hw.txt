@@ -1,0 +1,100 @@
+Theodore Nguyen
+704-156-701
+
+CS35L Fall 2014 Week 8 Homework: Reproducing under EC2; vulnerability review
+
+Part 1
+
+To reproduce the web server crash on amazon EC2, I basically did the same
+thing I did on the seasnet server. 
+
+I downloaded the sthttpd-2.26.4.tar.gz from the website, unpacked it, patched
+it manually, configured it, ran make, and then ran thttpd on a port; then I
+ran wget on the same port I ran thttpd on with an excessive number of A's to
+crash the server. 
+
+Part 2
+
+Listed from (1) to (5), where (1) is the most threatening vulnerability, while
+(5) is the least threatening
+
+(1) Vulnerability Note VU#505120
+Microsoft Secure Channel (Schannel) vulnerable to remote code execution via
+specially crafted packets
+
+The top 3 vulnerabilities are pretty much very close to each other in terms of
+threatening magnitude, so these top three might be exchanged with one another.
+The Schannel exploit takes the cake for the most threatening mainly because a
+majority of computer devices and PCs today do still operate on the Microsoft
+Windows operating system, and since this affects basically all Windows
+devices, this is the most threatening. The flaw allows a remote attacker to
+execute arbitrary code and completely compromise vulnerable systems. Luckily,
+there is a patch for the vulnerability - but Windows 2000 and XP (which, by
+the way, is still running on 25% of computers today) do not have a supported
+patch, and therefore remain vulnerable. The fact that a large majority devices
+today, whether they be personal or business PCs, 
+(since most devices are still Windows) can be compromised makes this the most
+threatening vulnerability.
+
+
+(2) Vulnerability Note VU#252743
+GNU Bash shell executes commands in exported functions in environment
+variables
+
+This is the next most serious problem mainly for the number of corporations
+and businesses affected that all use the GNU Bash shell, UNIX-like operating
+systems, and linux distributions. The sheer magnitude of the amount of people
+affected is a high contributor to the threat level of this vulnerability. This
+edges out of heartbleed vulnerability mainly because the remote attacker can
+execute arbitrary code on the compromised system (but only at the level of the
+calling application). Luckily, there is a patch for the vulnerability
+
+ 
+(3) Vulnerability Note VU#720951
+OpenSSL TLS heartbeat extension read overflow discloses sensitive information
+
+The commercial "heartbleed" vulnerability swept quite a lot of vendors,
+generally those that had consumers create a username and password, etc. Again,
+this is ranked high alot due to the sheer magnitude of how many people were
+affected and how many keys and how much sensitive information was compromised
+due to a remote attacker. The attacker can use the information to decrypt more
+information or perform attacks. This problem also has a patch for it. The main
+reason why this is ranked lower than the GNU bash shell vulnerability is that
+the attacker cannot execute arbitrary code on the system, meaning he may have
+less control and exploits to use.
+
+
+(4) Vulnerability Note VU#213119
+Microsoft Windows Kerberos Key Distribution Center (KDC) fails to properly
+validate Privilege Attribute Certificate (PAC) signature
+
+This is the 2nd to least threatening vulnerability, but when in comparison to
+least threatening, this one is PRETTY threatening. A domain user can forge
+information in the Priviledge Attribute Certificate to gain administrative
+priviledges since the KDC does not verify the password correctly. Because of
+this, the domain user can gain full control and compromise of every computer
+on the domain, which is a pretty big deal. The main reason this isn't ranked
+higher is that it must be executed by a user ALREADY ON THE DOMAIN - that is,
+a remote attacker not already in the domain cannot use the exploit to create
+an user it can use with admin priviledges. If that were the case, then this
+easily could be the most threatening vulnerability. Also, since theres a patch
+addressing this, it has been solved, so it makes it less vulnerable. 
+
+
+
+(5) Vulnerability Note VU#447516
+Linksys SMART WiFi firmware contains multiple vulnerabilities
+
+This is without a doubt the least threatening vulnerability for several
+reasons. First of all the gist of the vulnerability is that the remote attacker can
+get MD5 hash of the admin password, as well as read and modify sensitive
+information on the router. Sure, the fact that a remote attacker can do this
+from anywhere makes it a little more threatening; however, the attacker can't do
+much with the MD5 hash unless the administrator has a very simple password,
+since the MD5 is a one-way hash - it cannot be decrypted. At worst, the
+attacker can read sensitive information and modify it, which
+isn't that deleterious, espically when its only confined to the router.
+The problem is also extremely fixable, as Linksys has
+provided several firmware updates to block this vulnerability. Also, Linksys
+isn't the only router provider in the world (although they are a popular one),
+also attributing to the fact that this is the least serious vulnerability.

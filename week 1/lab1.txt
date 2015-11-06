@@ -1,0 +1,150 @@
+1. How can you get man to print all the commands that have a specific word in
+their man page (or at least the description part of the man page)? (hint: man
+man)
+
+ Use the command
+
+	man -K <specific word/phrase to search in man pages>
+
+
+
+2. Where are the cp and wc programs located in the file system?
+
+ The "cp" program is located at "/bin/cp", while the "wc" program is
+located at "/usr/bin/wc"
+
+
+
+3. What executable programs have names that are just one character long, and
+what do they do?
+
+They are essentially scripts the user has created through code compilation; it
+depends on what the script says. For example, using g++ to compile C++ code
+will yield an a.out executable file.
+
+
+
+4. When you execute the command named by the symbolic link /usr/bin/cc, which
+file actually is executed?
+
+the command /usr/bin/cc actually executes the /usr/bin/gcc command. This is
+discovered by typing "file /usr/bin/cc"
+
+
+
+5. The chmod program changes permissions on a file. What does the symbolic
+mode g-s mean, in terms of permissions?
+
+typing "chmod g-s" followed by the filename will change the permissions of
+that file - it removes permission to use the setuid
+and setgid modes from the users who are members of the file's group.
+
+
+
+6. What option to find lets you search for files that have been modified in
+the last 3 days?
+
+typing "find <path> -mtime -3" will search the directory listed under <path>
+for all files modified in the last 3 days
+
+
+
+7. Use the previous answer to find all directories modified in the last 3
+days.
+
+.
+./nsdefault
+./Desktop
+./Documents
+./Downloads
+./new
+./.emacs.d
+./.emacs.d/auto-save-list
+
+
+
+
+8. Of the files in the same directory as find, how many of them are symbolic
+links?
+
+350
+
+
+
+9. What is the oldest regular file in the /usr/lib directory?
+
+sgmlwhich
+
+
+
+10. Where does the locale command get its data from?
+
+it gets it from the current environment variables
+
+
+
+11. In Emacs, what commands have sort in their name?
+
+
+commands that are used for sorting text - divides a region of text via
+comparing text
+
+
+
+
+12. Briefly, what do the Emacs keystrokes C-a through C-z do? Can you list their
+actions concisely?
+
+C-a     move to beginning of a line
+C-b     move backwards a characer
+C-c     mode-specific-command-prefix
+C-d     delete character at cursor
+C-e     move cursor to end of the line
+C-f     move forward a character
+C-g     keyboard-quit
+C-h     help-command
+C-i	insert tab
+C-j 	replaces a return character
+C-k     kill-line
+C-l     recenter-top-bottom
+C-m	insert endline
+C-n     goes to next line
+C-o     open-line
+C-p     previous line
+C-q     quoted insert
+C-r	searches in reverse
+C-s	search
+C-t     transpose-characters
+C-u     universal-argument
+C-v     scrolls up
+C-w	kills marked region
+C-x     Control-X-prefix 
+C-y	yanks aka pasted last deleted
+C-z     suspend-frame
+
+
+13.In more detail, what does the Emacs keystroke C-g do?
+
+
+The C-g keystroke allows one to cancel cancel a command or action that has
+been started in emacs. It is analogous to killing a
+command in UNIX by pressing CTRL+C
+
+
+
+14.What does the Emacs yank function do?
+
+The yank function reinserts text that was previously killed (aka, text that
+was removed and thus removed from the kill ring)
+
+
+
+
+15.When looking at the directory /usr/bin, what's the difference between the
+output of the ls -l command, and the directory listing of the Emacs dired
+command?
+
+The ls -l command only allows showing of the directory with details -
+different options are needed for sorting. Dired, however, formats the printed
+output and allows working with files from different directories.
+

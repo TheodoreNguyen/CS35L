@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ -d $1 ]; then
+
+	all=`ls -A -1 $1 | grep '^\.'; ls -1 $1`
+
+	declare -a array
+	let count=0
+
+	echo "$all" > temporary.txt
+	sort temporary.txt
+	while read file
+	do
+		if [ -f "$1/$file" ]; then
+		array[$count]="$1/$file"
+			let count=count+1
+		fi
+	done < temporary.txt
+	rm temporary.txt
+	for ((x=0; x<$count; x++)); do
+		for ((y=x+1; y<$count; y++)); do
+			cmp -s "${array[$x]}" "${array[$y]}"
+			if [ $? -eq 0 ]; then
+				ln "${array[$x]}" "${array[$y]}"
+				array[$y]=array[$x]
+			fi
+		done
+	done
+else
+	echo "Does not exist"
+fi

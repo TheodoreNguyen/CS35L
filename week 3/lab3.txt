@@ -1,0 +1,125 @@
+Theodore Nguyen
+704-156-701
+
+CS35L week 3, laboratory exercise 3
+
+- I first created a new directory in my home directory for assignment 3,
+  found under:
+
+ /u/eng/class/classeen/assign3
+
+- Afterwards, I copied the link to download Coreutils 7.6 found under
+  ftp://ftp.gnu.org/gnu/coreutils/coreutils-7.6.tar.gz
+ and downloaded the file using the "wget" command
+
+ wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-7.6.tar.gz
+
+- Then, I extracted the coreutils file using the tar command as follows
+
+ tar -zvxf coreutils-7.6.tar.gz
+
+- I go to the newly created coreutils-7.6 directory containing the files I
+  just extracted
+
+ cd coreutils-7.6
+
+- I run the command 
+
+ ./configure 
+
+which is run because the C compiler may be in different places on different
+systems, different systems are using different shells, as well as a myriad of
+many other things the program may need to know before running the program. In
+the end, it builds the Makefile for the program.
+
+This is followed up by running the command
+
+ make
+
+which essentially builds the program, executing make, looking for the first
+target in the recently made Makefile and executing the instructions to build
+an executable program.
+
+Finally, finish with running
+
+ make install
+
+which evokes make to find the target install in Makefile to install the
+program.
+
+- AFterwards, I check the locale to see if my locale is set to "en_US.UTF-8"
+  using the command "locale", and indeed it is
+
+- I go to the src directory:
+
+ cd /u/eng/class/classeen/assign3/coreutils-7.6/src/
+
+- I run the command 
+
+ ./ls -l
+
+to check the date format that is outputted. Indeed, the date format for all
+the files is listed in the form YYYY-MM-DD, so we can introduce the patch to
+change it to form "MONTH DAY YEAR"
+
+- I accessed the webpage containing Brady's patch at
+  http://lists.gnu.org/archive/html/bug-coreutils/2009-09/msg00410.html
+ and read the documentation, particularly the patch itself.
+- I accessed that I had to add the lines in the patch itself which contained a
+  "+" character on the left side, and remove the lines that contained a "-"
+ character within the code of the "ls.c" file found under coreutils-7.6/ls.c 
+
+- I went to the directory containing ls.c
+ 
+ cd /u/eng/class/classeen/assign3/coreutils-7.6/src
+
+- I opened ls.c in emacs to modify the file via patching myself
+
+ emacs ls.c
+
+- I went to the section of the ls.c code that was specific to the patch, which
+  was on line 2014, using emacs go to line function
+
+ M+g+g 2014
+
+- I deleted the duplicate line of code that said 
+
+ case_long_iso_time_style:
+
+- I scrolled down to the nearby for-loop that I also had to modify, and
+  deleted the following code
+
+                  {
+                     char const *locale_format =
+                      dcgettext (NULL, long_time_format[i], LC_TIME);
+                     if (locale_format == long_time_format[i])
+                       goto case_long_iso_time_style;
+                     long_time_format[i] = locale_format;
+                  }
+
+
+- Afterwards, I inserted the following code in its place
+
+                 long_time_format[i] =
+                   dcgettext (NULL, long_time_format[i], LC_TIME);
+
+- I saved the newly modified ls.c using commands 
+
+ C-x C-s
+
+  and exited the emacs prompt 
+
+ C-x C-c
+
+- I ran the command "make" after returning to the coreutils-7.6 home directory
+
+ cd /u/eng/class/classeen/assign3/coreutils-7.6
+ make
+
+- I went back to the src directory and ran ls -l to verify if the changes were
+  compete - and they were
+
+ cd src
+ ./ls -l
+
+

@@ -1,0 +1,273 @@
+Theodore Nguyen
+704-156-701
+
+CS35L week 8: Buffer overruns; Laboratory: Exploiting a buffer overrun
+
+We will find and exploit a simple buffer overrun in a web server.
+
+ - I created a directory for this week's assignment and then created two files, lab.txt and hw.txt, inside the directory. Afterwards, I ran
+
+wget http://www.cs.ucla.edu/classes/fall14/cs35L/assign/sthttpd-2.26.4.tar.gz
+
+ to download the sthttpd 2.26.4 software in order to consider the patch later
+
+ - I created another file called patch.txt and wrote the given contents of the
+   patch into the patch file, as given.
+
+ - I unpacked the downloaded software
+
+tar -zxvf sthttpd-2.26.4.tar.gz
+
+ - I went into the directory of the newly unpacked file and patched it, then
+   configured and ran make
+
+patch -p1 < ../patch.txt
+./configure CFLAGS="-g"
+make
+
+ - I went into src directory and ran the patched executable on port 12401 (I
+   could choose from port 12400 to port 12499)
+
+cd src
+./thttpd -p 12401
+
+ - I then ran
+
+wget http://localhost:12401
+ 
+ and
+
+ps ux
+
+ which downloaded an index.html file to verify that the command was
+ successful and showed all running processes, which included ./thttpd -p 12401
+ The web server also works in the normal case too.
+
+ - In crashing the web server, I opened another terminal in purpose to send
+   the crashing request. On the terminal which I was on before, I ran
+
+gdb thttpd PID
+
+ where PID was the process ID of the ./thttpd -p 12401 shown in the second
+ column after running the command "ps ux" earlier. Inside the gdb prompt, I
+ entered "c" and the gdb continued.
+
+ On the new terminal I opened to crash the server, I ran the command
+
+wget http://localhost:12401/AAAAAAA....AAAA
+
+ where there were approximately 2000-3000 A's. On that same terminal, the
+ connecting finished but stopped at awaiting a response. On the prior terminal
+ which gdb was run, the continuing prompt changed to 
+
+Program received signal SIGSEGV, Segmentation fault
+
+ I ran the command "bt" to backtrace; here was the output up to 23 lines
+(there were 99 lines):
+
+#0  0x0000003871679ded in _int_malloc () from /lib64/libc.so.6
+#1  0x000000387167a636 in calloc () from /lib64/libc.so.6
+#2  0x000000387166f22d in open_memstream () from /lib64/libc.so.6
+#3  0x00000038716e4c7b in __vsyslog_chk () from /lib64/libc.so.6
+#4  0x000000387167078e in __libc_message () from /lib64/libc.so.6
+#5  0x0000003871676166 in malloc_printerr () from /lib64/libc.so.6
+#6  0x000000387167bc27 in _int_realloc () from /lib64/libc.so.6
+#7  0x000000387167bde5 in realloc () from /lib64/libc.so.6
+#8  0x000000387166f324 in _IO_mem_finish () from /lib64/libc.so.6
+#9  0x0000003871666727 in fclose@@GLIBC_2.2.5 () from /lib64/libc.so.6
+#10 0x00000038716e4d79 in __vsyslog_chk () from /lib64/libc.so.6
+#11 0x000000387167078e in __libc_message () from /lib64/libc.so.6
+#12 0x0000003871676166 in malloc_printerr () from /lib64/libc.so.6
+#13 0x000000387167bc27 in _int_realloc () from /lib64/libc.so.6
+#14 0x000000387167bde5 in realloc () from /lib64/libc.so.6
+#15 0x000000387166f324 in _IO_mem_finish () from /lib64/libc.so.6
+#16 0x0000003871666727 in fclose@@GLIBC_2.2.5 () from /lib64/libc.so.6
+#17 0x00000038716e4d79 in __vsyslog_chk () from /lib64/libc.so.6
+#18 0x000000387167078e in __libc_message () from /lib64/libc.so.6
+#19 0x0000003871676166 in malloc_printerr () from /lib64/libc.so.6
+#20 0x000000387167bc27 in _int_realloc () from /lib64/libc.so.6
+#21 0x000000387167bde5 in realloc () from /lib64/libc.so.6
+#22 0x000000387166f324 in _IO_mem_finish () from /lib64/libc.so.6
+
+
+
+
+
+
+
+Briefly describe how you'd go about building a remote exploit for the bug in the modified thttpd. Your exploit should allow you to conduct a highly-effective
+denial-of-service attack on the web server, or perhaps even run arbitrary code on the web server.
+
+
+------> memory can be dynamically allocated inside the heap; inside the heap
+memory, the data for which what pointers point to is allocated. This data
+which holds the pointer data is next to the buffer; by allocating - or say,
+overflowing - memory into the heap, we can overwrite this pointer memory that
+the heap is trying to keep track of. The command "free" does not indicate how
+many bytes to free up in the heap, this is because the pointers were already
+supposed to do that for us. In patching the code, we changed it from 
+
+hc->read_size - hc->read_idx );
+
+ to
+
+hc->read_size );
+
+ effectively taking out the reading the size of the memory; without this, it
+can overflow the buffer.
+
+
+In exploiting the heap remotely, we need a jump command in the right place
+when overwriting, so we can go to the start of our exploit code. The exploit
+code could be a simple function execution or open admin priviledges. In
+exploiting the stack, you can cause a buffer overflow, overwriting the return
+address with that of your buffer and putting your exploit code in.
+
+
+
+
+
+
+
+
+
+ - I ran the command
+
+gcc -m32 -c -S -o thttpd-nostackprot.s -fno-stack-protector -I . -I ../
+thttpd.c
+
+ to create the no-stack-protection assembly, and the command
+
+gcc -m32 -c -S -o thttpd-stackprot.s -fstack-protector -I . -I ../ thttpd.c
+
+ to create the stack-protection assembly.
+
+
+
+
+
+- I ran the command
+
+make CC="gcc -m32" \
+  CFLAGS="-fsanitize=address -fstack-protector" \
+  LDFLAGS="-Xlinker --rpath=/usr/local/cs/gcc-$(gcc -dumpversion)/lib"
+
+
+ When inside the sthttpd-2.26.4 folder. I opened another terminal and did
+ another backtrace in gdb. There was no stack - fsanitize kills the process
+ when it knows errors exist instead of producing error messages.
+
+
+
+
+
+- I ran the command
+
+gcc -m32 -c -S -o thttpd-sanitize.s -fsanitize=address -fstack-protector -I .
+-I ../ thttpd.c 
+
+ to create the fsanitize file. I actually had to do this with gcc-4.9.2, as
+ that was the version I ran the previous command on since I couldn't find the
+ folder with the integrated gcc. I then ran
+
+diff thttpd-sanitize.s thttpd-stackprot.s 
+
+ To compare the two. The sanitize has alot of assembly code instructions than
+ the latter, leading us to think that sanitize is less efficient. 
+
+
+
+
+
+
+
+
+
+ - In using valgrind, first I made sure the web server was not up and running
+   by using the "ps ux" command. Afterwards, I ran the command
+
+valgrind ./thttpd -p 12401
+ 
+ obviously when inside the src folder; I then opened up another terminal to
+ crash the server with the command 
+
+wget http://localhost:12401/AAAAAAAAAAAAA.... (2000-3000 A's)
+
+ The following was the outputted message from valgrind.
+
+
+
+[classeen@lnxsrv01 ~/assign8/sthttpd-2.26.4/src]$ valgrind ./thttpd -p 12401
+==27391== Memcheck, a memory error detector
+==27391== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
+==27391== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==27391== Command: ./thttpd -p 12401
+==27391==
+==27391==
+==27391== HEAP SUMMARY:
+==27391==     in use at exit: 0 bytes in 0 blocks
+==27391==   total heap usage: 12 allocs, 12 frees, 3,318 bytes allocated
+==27391==
+==27391== All heap blocks were freed -- no leaks are possible
+==27391==
+==27391== For counts of detected and suppressed errors, rerun with: -v
+==27391== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
+[classeen@lnxsrv01 ~/assign8/sthttpd-2.26.4/src]$ ==27394==
+==27394== HEAP SUMMARY:
+==27394==     in use at exit: 28,672 bytes in 5 blocks
+==27394==   total heap usage: 27 allocs, 22 frees, 49,937 bytes allocated
+==27394==
+==27394== LEAK SUMMARY:
+==27394==    definitely lost: 0 bytes in 0 blocks
+==27394==    indirectly lost: 0 bytes in 0 blocks
+==27394==      possibly lost: 0 bytes in 0 blocks
+==27394==    still reachable: 28,672 bytes in 5 blocks
+==27394==         suppressed: 0 bytes in 0 blocks
+==27394== Rerun with --leak-check=full to see details of leaked memory
+==27394==
+==27394== For counts of detected and suppressed errors, rerun with: -v
+==27394== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
+==27388== Syscall param read(buf) points to unaddressable byte(s)
+==27388==    at 0x376F0DB720: __read_nocancel (in /lib64/libc-2.12.so)
+==27388==    by 0x40562D: handle_read (thttpd.c:1601)
+==27388==    by 0x4037B9: main (thttpd.c:802)
+==27388==  Address 0x4c6ce41 is 0 bytes after a block of size 2,001 alloc'd
+==27388==    at 0x4A06BE0: realloc (vg_replace_malloc.c:662)
+==27388==    by 0x408854: httpd_realloc_str (libhttpd.c:715)
+==27388==    by 0x4055F5: handle_read (thttpd.c:1596)
+==27388==    by 0x4037B9: main (thttpd.c:802)
+==27388==
+--27388-- VALGRIND INTERNAL ERROR: Valgrind received a signal 11 (SIGSEGV) -
+exiting
+--27388-- si_code=80;  Faulting address: 0x0;  sp: 0x402f04de0
+
+valgrind: the 'impossible' happened:
+   Killed by fatal signal
+==27388==    at 0x3803EC04: vgPlain_arena_malloc (m_mallocfree.c:291)
+==27388==    by 0x3800386A: vgMemCheck_realloc (mc_malloc_wrappers.c:490)
+==27388==    by 0x3807A0AD: vgPlain_scheduler (scheduler.c:1673)
+==27388==    by 0x380A5A19: run_a_thread_NORETURN (syswrap-linux.c:103)
+
+sched status:
+  running_tid=1
+
+Thread 1: status = VgTs_Runnable
+==27388==    at 0x4A06BE0: realloc (vg_replace_malloc.c:662)
+==27388==    by 0x408854: httpd_realloc_str (libhttpd.c:715)
+==27388==    by 0x40B4D3: httpd_parse_request (libhttpd.c:2014)
+==27388==    by 0x40578D: handle_read (thttpd.c:1639)
+==27388==    by 0x4037B9: main (thttpd.c:802)
+
+
+Note: see also the FAQ in the source distribution.
+It contains workarounds to several common problems.
+In particular, if Valgrind aborted or crashed after
+identifying problems in your program, there's a good chance
+that fixing those problems will prevent Valgrind aborting or
+crashing, especially if it happened in m_mallocfree.c.
+
+If that doesn't help, please report this bug to: www.valgrind.org
+
+In the bug report, send all the above text, the valgrind
+version, and what OS and version you are using.  Thanks.
+

@@ -1,0 +1,54 @@
+Theodore Nguyen
+704-156-701
+
+CS35L week 4 homework 4 Fall 2014: Verifying and publishing a backported
+change
+
+- I ran the command
+
+git checkout v3.0 -b 'quote'
+
+ to checkout another branch of v3.0 of Diffutils
+
+- I ran the command
+
+patch -p1 < ../quote-3.0-patch.txt
+
+ to install the change into the new branch, modifying the .c files kept
+
+- I commited the files changed by the patch and ran the following commands
+ 
+bootstrap
+configure
+make
+make check
+make distdir
+
+ and then checked the ChangeLog to conform that it contained the commit,
+ composing the changelog and commiting my changes to the new branch
+
+- I ran the command
+
+git format-patch -1 --stdout > formatted-patch.txt
+
+ to generate the formatted-patch.txt 
+
+- I checked if the patch worked: I ran 
+
+git checkout 3.0 -b 'temporary'
+git am formatted-patch.txt
+
+ and built it via the README commands, which was verified when running 
+
+make check
+
+- I ran
+
+make distdir 
+
+ and inspected the resulting file and ChangeLog that had the original 
+ commited message.
+
+
+
+

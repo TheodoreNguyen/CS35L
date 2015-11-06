@@ -1,0 +1,65 @@
+Theodore Nguyen
+704-156-701
+
+CS35L Fall 2014 Week 6 Laboratory: SSH setup and use in applications
+
+- I first put the disc with Ubuntu on it inside my machine, then booted and
+  spammed the F12 button to get to the alternate-boot screen. I selected boot
+ CD/ROM drive to boot from the CD, Ubuntu. I booted from Ubuntu's disk,
+ waiting for the OS to warmup. After getting to the desktop, I opened the
+"terminal" to ready myself to execute the rest of the commands.
+
+- I typed in the following commands
+
+sudo apt-get update
+sudo apt-get install openssh-server
+
+ to make sure I was updated and then to install the openssh server
+
+- Afterwards, I ran the following commands
+
+sudo useradd -d /home/ashi/ -m ashi
+sudo passwd ashi
+
+ to create a username "ashi" and a password for the "ashi"; I was prompted
+with the password prompt afterwords, and made the password "ashi" as well.
+
+- I then ran
+
+cd /home/ashi
+sudo mkdir .ssh
+sudo chown -R ashi .ssh
+sudo chmod 700 .ssh
+ifconfig
+
+ I then gave my partner the ip address under the link, 10.95.81.35
+
+ps aux | grep ssh
+
+ I was prompted to make a password (locally) which I did, and then i had to
+ enter it at one point.
+
+- Afterwords, my partner typed in the following commands
+
+ssh-keygen
+ping server_ip_addr
+CTRL + C (to stop pinging)
+ssh-copy-id -i ashi@10.95.81.35
+
+ prompted for password input, inputted ashi
+
+ssh-add 
+ssh -X ashi@10.95.81.35
+xterm
+ 
+ and then another window opens for input
+
+firefox
+ 
+ and then a firefox page opens.
+
+
+- This was repeated for my run as well - my partner ran my commands, and I ran
+  his (for a different username, password, and IP address, of course).
+ Password input for login weas not required after the first time for password
+ input.

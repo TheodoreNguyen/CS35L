@@ -1,0 +1,86 @@
+wget http://www.cs.ucla.edu/classes/fall14/cs35L/assign/assign1.html
+for i in {1..3}
+do
+cp assign1.html exer$i.html 
+done
+emacs exer1.html
+C-s ASCII
+M-< 
+C-s Instructions
+M-<
+C-s HTML
+M-b
+M-<
+C-s hunt
+M-b
+C-e C-a
+M-< 
+C-x C-c
+emacs exer2.html
+M-x goto-line 
+16
+C-k
+C-s DELE
+C-k
+down
+C-k
+C-s wiki
+C-s
+C-k
+C-s <!---->
+right
+DEL DEL DEL DEL DEL DEL DEL
+C-x C-s y yes
+diff -u exer1.html exer2.html > exer2.diff
+emacs exer3.html 
+C-s Assignment 1 left DEL 35
+C-s Assignment 1 left DEL 35
+C-s UTF-8 left DEL DEL DEL DEL DEL US-ASCII
+C-s <ol> left \n
+C-x C-s y yes
+diff -u exer1.html exer3.html > exer3.diff
+cat exer2.html exer2.diff > exer4.html
+emacs exer4.html
+M->
+C-r <!----
+C-SP left left left left M-w
+C-r "should output nothing" C-y
+M->
+C-R wikipedia
+C-SP down down down C-W
+C-r "submit" C-y
+M->
+C-r "delete" C-a, C-SP, C-E, M-E
+C-r "homework", C-r
+C-y
+M->
+C-r laboratory, down
+C-SP, down down down, M-W
+C-r laboratory, C-R, C-R
+down, C-y
+M->
+C-r, exer1.html
+C-SP, M->, DEL
+C-/
+M-> 
+-->
+C-r exer1.html 
+up
+<!----
+M-<
+M-x replace-string <ol> <0l>
+C-x, yes, yes
+diff -u exer1.html exer4.html > exer4.diff
+cd
+mkdir junk
+cd junk
+touch hello.c
+vi hello.c
+SHIFT - INS
+emacs compile hello.c
+M-x
+compile
+gcc hello.c -o hello-out 
+./hello.out > hw1.txt
+Hello World!
+

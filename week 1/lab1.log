@@ -1,0 +1,27 @@
+man man
+man -k something
+which -a cp
+which -a wc
+
+file /usr/bin/cc
+chmod g-s test
+find . -mtime -3
+cd
+find . -type d -mtime -3
+cd /usr/bin/
+find -type l > /u/eng/class/classeen/test2
+cd
+wc -l test2
+ls /usr/lib/ -trl
+locale
+emacs test4
+ESC, x sort-lines
+ESC, x sort-fields
+CTRL + X, CTRL + C
+CTRL + A, CTRL + B, CTRL + C, ... CTRL + Z
+CTRL + G
+CTRL + Y
+CTRL + X, CTRL + C
+ls -l
+emacs dired
+

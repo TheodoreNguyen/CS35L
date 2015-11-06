@@ -1,0 +1,87 @@
+Theodore Nguyen
+704-156-701
+
+CS35L Fall 2014 Week 4 Lab 4: managing a backreported change
+
+- I created a new directory for assignment 4 to get a copy of Diffutils
+  repository
+
+- I went to the link 
+
+http://savannah.gnu.org/git/?group=diffutils
+
+ and I copied the command 
+
+git clone git://git.savannah.gnu.org/diffutils.git
+
+ and I ran the command in my terminal, which generated a directory called
+ diffutils
+
+- I went to the newly created diffutils directory
+
+cd /u/eng/class/classeen/assign4/diffutils/
+
+- I ran the command
+
+git log > ../git-log.txt
+
+ to get a log of changes to Diffutils' master branch and store it
+
+- I ran the command
+
+git tag > ../git-tags.txt
+
+ to generate a list of tags used for Diffutils and store it
+
+- I used emacs on the git-log.txt to locate the phrase "like this" in order 
+ to find the hash number for the desired commit. I copied the hash number
+
+- I ran the command
+
+git show [hash number] > ../quote-patch.txt
+
+ to store the desired patch contents.
+
+- I ran the command
+
+git checkout v3.0 -b version3.0
+
+ to checkout version 3.0 of Diffutils
+
+- I ran 
+
+patch -p1 < ../quote-patch.txt 
+
+ to patch, skipping 3 times during the patch
+
+- I ran 
+
+git status
+
+ to get the status
+
+- I patched the files by hand and using emacs
+
+- I copied the rej changes into the original file and inputted that with a +
+
+- I ran
+
+git clean -f 
+
+ to clean the files not used
+
+- I ran
+
+git status
+
+ and then
+
+git diff > ../quote-3.0-patch.txt
+
+ to produce the 391 line file 
+
+- I read README-hacking to verify the command scenario
+
+- I git cloned the old version again and compared it to the modified version
+ post-build; I ran diff to see the differences. The files were not identical,
+showing changes in the ` and ' via changes in the code.

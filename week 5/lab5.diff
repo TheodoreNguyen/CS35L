@@ -1,0 +1,16 @@
+2014-11-07  Theodore Hung Nguyen  <classeen@lnxsrv01.seas.ucla.edu>
+
+	*The bit overflow issue inside timespec_cmp is fixed
+
+--- timespec.h	2014-11-07 21:09:14.727829000 -0700
++++ lib/timespec.h	2014-11-07 21:11:28.858740000 -0700
+@@ -46,6 +46,9 @@
+ timespec_cmp (struct timespec a, struct timespec b)
+ {
+   int diff = a.tv_sec - b.tv_sec;
++  if( (a.tv_sec < 0 && b.tv_sec > 0 && diff > 0) ||
++	(a.tv_sec > 0 && b.tv_sec < 0 && diff < 0 ) )
++	diff = a.tv_sec;
+   return diff ? diff : a.tv_nsec - b.tv_nsec;
+ }
+
